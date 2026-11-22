@@ -50,6 +50,8 @@ Select all six Harness skills and your agent. Add `--global` for a user-wide ins
 
 The GitHub commands work once the files are on the repository's default branch. For a local checkout, use its absolute path as the source.
 
+After pushing changes to GitHub, run `npx skills update -p` from each project where you installed Harness. If you installed Harness globally, run `npx skills update -g` once per machine. Both commands update all installed skills in the selected scope.
+
 ### Claude Code
 
 ```sh
