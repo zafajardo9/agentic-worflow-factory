@@ -1,0 +1,12 @@
+{
+  "name": "zafajardo-harness",
+  "owner": {
+    "name": "zafajardo9"
+  },
+  "plugins": [
+    {
+      "name": "harness-factory",
+      "source": "./"
+    }
+  ]
+}
