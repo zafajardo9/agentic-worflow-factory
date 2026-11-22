@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # harness-spec
 
-Read [HARNESS.md](../../HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
+Read [HARNESS.md](references/HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
 
 Inspect the relevant project instructions, existing behavior, entry points, tests, and supplied references. Trace the main journey and relevant alternate, failure, and recovery paths. Identify actors, current behavior, expected behavior, boundaries, data and compatibility constraints, and observable acceptance criteria. Separate evidence from assumptions. Surface conflicts and important unknowns with impact ratings. Use the [spec template](references/spec-template.md) to write `context-spec.md`.
 

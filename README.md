@@ -38,7 +38,19 @@ Replace `UserService` with a symbol in that repository. The extract command buil
 
 ## Install and update
 
-The GitHub commands work once the plugin files are on the repository's default branch. For a local checkout, use the checkout's absolute path instead of the GitHub source when adding a marketplace or installing from a directory.
+### Quick install with the Skills CLI
+
+With Node.js installed, run this from the project where you want the six skills:
+
+```sh
+npx skills add zafajardo9/agentic-worflow-factory
+```
+
+Select all six Harness skills and your agent. Add `--global` for a user-wide install, or `--skill harness-review` to install a single stage. These are standalone skills, so use your agent's skill picker or its standalone invocation syntax. See the [Skills CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md).
+
+The GitHub commands work once the files are on the repository's default branch. For a local checkout, use its absolute path as the source.
+
+After pushing changes to GitHub, run `npx skills update -p` from each project where you installed Harness. If you installed Harness globally, run `npx skills update -g` once per machine. Both commands update all installed skills in the selected scope.
 
 ### Claude Code
 
@@ -74,10 +86,10 @@ agy plugin install https://github.com/zafajardo9/agentic-worflow-factory
 
 This installs to your profile. Invoke `/harness-spec` and substitute the skill name for other stages. To refresh a manually installed copy, reinstall from the updated source. If the client reports that the plugin already exists, uninstall it with `agy plugin uninstall harness-factory` and install again.
 
-For workspace-only discovery, copy the six skill directories from `skills/` into the target project's `.agents/skills/`, and copy `HARNESS.md` to `.agents/HARNESS.md`. Keep these together so the same relative references resolve. Refresh these copies after pulling an update. See [Antigravity plugins](https://antigravity.google/docs/plugins) and [workspace skills](https://antigravity.google/docs/skills).
+For workspace-only discovery, use the Skills CLI or copy the six skill directories from `skills/` into the target project's `.agents/skills/`. Refresh these copies after pulling an update. See [Antigravity plugins](https://antigravity.google/docs/plugins) and [workspace skills](https://antigravity.google/docs/skills).
 
 ## Maintain the plugin
 
-Edit the canonical `skills/<name>/SKILL.md` or its references. Change `HARNESS.md` when a shared stage or approval rule changes. For a release, bump the version in the root manifest and all three host manifests together, then commit and push. The marketplace files point to the same checkout.
+Edit `skills/<name>/SKILL.md` or its references. For shared rules, edit the root `HARNESS.md`, run `node scripts/sync-harness.mjs`, and commit the generated copies. Each skill carries its own copy so it works when installed individually. For a release, bump the version in the root manifest and all three host manifests together, then commit and push. The marketplace files point to the same checkout.
 
 For local packaging checks, run `claude plugin validate .`, `codex plugin marketplace list` from the checkout, and `agy plugin validate .` where those tools are installed. After installation, try a spec in a disposable project. Confirm that it stops at approval, review produces findings without editing the spec, and execute cannot start when an approved artifact has been edited since approval.

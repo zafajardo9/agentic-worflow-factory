@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # harness-workflow
 
-Read [HARNESS.md](../../HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
+Read [HARNESS.md](references/HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
 
 Verify the selected spec approval. Read the actual integration points, existing conventions, and available checks. Build an ordered workflow with requirement IDs, affected components, proposed changes, dependencies, and verification actions. Address compatibility, rollout, and recovery where the change warrants it. Include user-facing acceptance checks for QA and concrete expected observations. Write `workflow.md` using the [workflow template](references/workflow-template.md).
 
