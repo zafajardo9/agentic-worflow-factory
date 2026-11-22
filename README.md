@@ -6,6 +6,7 @@ Harness Factory is a skills-only plugin for taking a software change from intake
 
 | Skill | Output |
 | --- | --- |
+| `web-research` | Dated findings, tradeoffs, and recommendations backed by live web sources. |
 | `harness-spec` | A feature spec with evidence, acceptance criteria, and questions rated by impact. |
 | `harness-bug` | A bug spec with expected and observed behavior, root-cause confidence, and regression criteria. |
 | `harness-workflow` | An implementation and verification plan mapped to the approved requirements. |
@@ -13,7 +14,7 @@ Harness Factory is a skills-only plugin for taking a software change from intake
 | `harness-execute` | The approved code changes and implementation check results. |
 | `harness-qa` | User-facing test results and any failures or verification gaps. |
 
-Start with spec or bug intake. Approve that revision, call workflow, approve the workflow revision, then call execute and QA separately. Review is optional and can be called at any point. A QA failure against agreed behavior can start a new bug intake. If expected behavior is unclear, revisit the spec.
+Start with spec or bug intake. Approve that revision, call workflow, approve the workflow revision, then call execute and QA separately. Review is optional and can be called at any point. Run `web-research` on demand when an idea or spec needs current evidence. It uses your host's live web search or browsing tool and returns findings in chat. A QA failure against agreed behavior can start a new bug intake. If expected behavior is unclear, revisit the spec.
 
 For example, invoke `harness-spec` with “Let customers retry a failed submission without losing their input.” Then invoke `harness-review` with “Review the acceptance criteria for retry and duplicate submissions.” Explicitly approve the spec fingerprint presented when ready. Default work-item files live under `.harness/<task-slug>/` in the project you are working on. The two human approval gates apply to the exact spec and workflow revisions.
 
@@ -40,13 +41,13 @@ Replace `UserService` with a symbol in that repository. The extract command buil
 
 ### Quick install with the Skills CLI
 
-With Node.js installed, run this from the project where you want the six skills:
+With Node.js installed, run this from the project where you want the seven skills:
 
 ```sh
 npx skills add zafajardo9/agentic-worflow-factory
 ```
 
-Select all six Harness skills and your agent. Add `--global` for a user-wide install, or `--skill harness-review` to install a single stage. These are standalone skills, so use your agent's skill picker or its standalone invocation syntax. See the [Skills CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md).
+Select all seven skills and your agent. Add `--global` for a user-wide install, or `--skill harness-review` to install a single stage. These are standalone skills, so use your agent's skill picker or its standalone invocation syntax. See the [Skills CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md).
 
 The GitHub commands work once the files are on the repository's default branch. For a local checkout, use its absolute path as the source.
 
@@ -86,7 +87,7 @@ agy plugin install https://github.com/zafajardo9/agentic-worflow-factory
 
 This installs to your profile. Invoke `/harness-spec` and substitute the skill name for other stages. To refresh a manually installed copy, reinstall from the updated source. If the client reports that the plugin already exists, uninstall it with `agy plugin uninstall harness-factory` and install again.
 
-For workspace-only discovery, use the Skills CLI or copy the six skill directories from `skills/` into the target project's `.agents/skills/`. Refresh these copies after pulling an update. See [Antigravity plugins](https://antigravity.google/docs/plugins) and [workspace skills](https://antigravity.google/docs/skills).
+For workspace-only discovery, use the Skills CLI or copy the seven skill directories from `skills/` into the target project's `.agents/skills/`. Refresh these copies after pulling an update. See [Antigravity plugins](https://antigravity.google/docs/plugins) and [workspace skills](https://antigravity.google/docs/skills).
 
 ## Maintain the plugin
 
