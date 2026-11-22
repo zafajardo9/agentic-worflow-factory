@@ -1,0 +1,13 @@
+---
+name: harness-execute
+description: Implement an approved Harness Factory workflow when the user calls harness-execute.
+disable-model-invocation: true
+---
+
+# harness-execute
+
+Read [HARNESS.md](../../HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
+
+Verify both approvals, confirm the workflow's linked spec fingerprint, and inspect existing changes and project instructions. Implement all approved steps through the normal project entry points using existing patterns. Check each material change against its requirement, preserve unrelated edits, and stop affected work when evidence invalidates an approved decision. Continue independent approved steps where they remain valid.
+
+Run the workflow's implementation checks and record the changes and evidence by requirement in `execution.md`. Report failures, blockers, and anything still unverified. Stop after the implementation handoff. A QA pass is a separate invocation.

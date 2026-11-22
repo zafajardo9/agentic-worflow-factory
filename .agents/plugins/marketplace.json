@@ -1,0 +1,20 @@
+{
+  "name": "zafajardo-harness",
+  "interface": {
+    "displayName": "Harness Factory"
+  },
+  "plugins": [
+    {
+      "name": "harness-factory",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
