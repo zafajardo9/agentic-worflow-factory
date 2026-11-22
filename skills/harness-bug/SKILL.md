@@ -1,0 +1,13 @@
+---
+name: harness-bug
+description: Investigate a specific software failure and draft a bug spec when the user calls harness-bug.
+disable-model-invocation: true
+---
+
+# harness-bug
+
+Read [HARNESS.md](../../HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
+
+Capture the report, affected environment or revision, expected and actual behavior, and smallest useful reproduction for ordinary product failures. Inspect relevant paths, tests, and available logs. Use the approved local environment for checks. Record whether the issue was observed, inferred, or blocked, and label root-cause confidence with supporting or contradictory evidence. State user impact and bounded fix requirements with regression criteria in `bug-spec.md` using the [bug template](references/bug-template.md).
+
+Check that each requirement tests a symptom or obligation supported by the evidence and that the proposed scope is bounded. For a failure caused by undefined expected behavior, identify the missing product decision. Present the draft and request approval once blockers are resolved. Stop before editing source code.
