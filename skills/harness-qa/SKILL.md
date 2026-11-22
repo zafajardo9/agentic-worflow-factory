@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # harness-qa
 
-Read [HARNESS.md](../../HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
+Read [HARNESS.md](references/HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
 
 Identify the task and current implementation, load its approved expected behavior and QA plan, and check whether execution evidence still applies. If the task or baseline is missing, identify what you need. Run the planned user-facing journeys through ordinary entry points using suitable test data and available environments. Cover primary, alternate, failure and recovery paths, and nearby regressions in proportion to the change. Use observed outcomes to assess requirements. Static inspection or a skipped scenario cannot substitute for an end-to-end pass.
 

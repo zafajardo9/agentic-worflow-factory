@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # harness-execute
 
-Read [HARNESS.md](../../HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
+Read [HARNESS.md](references/HARNESS.md) relative to this skill before proceeding. Apply its stage boundary, work-item conventions, and approval rules. Run this stage only when the user explicitly requests it.
 
 Verify both approvals, confirm the workflow's linked spec fingerprint, and inspect existing changes and project instructions. Implement all approved steps through the normal project entry points using existing patterns. Check each material change against its requirement, preserve unrelated edits, and stop affected work when evidence invalidates an approved decision. Continue independent approved steps where they remain valid.
 
