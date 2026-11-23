@@ -20,22 +20,36 @@ For example, invoke `harness-spec` with “Let customers retry a failed submissi
 
 ## Reuse context across stages
 
-Harness carries forward useful information from prompts when you invoke its stages. Task memory in `.harness/<task-slug>/context.md` records decisions, blockers, the next action, and pointers to existing evidence. Project memory in `.harness/memory.md` carries durable preferences and confirmed conventions across tasks. Both files live in the target project and are readable in a fresh chat opened there.
+Harness carries forward useful information from prompts when you invoke its stages. Task memory in `.harness/<task-slug>/context.md` records decisions, blockers, the next action, pointers to existing evidence, and a trail of links to each stage's artifacts. Project memory in `.harness/memory.md` carries durable preferences and confirmed conventions across tasks. Both files live in the target project and are readable in a fresh chat opened there.
 
 For example, tell a stage “Remember for this project that browser QA uses the staging sandbox” or “Forget the old staging sandbox preference.” A refinement such as “Retry only network failures for this task” belongs with the work item and goes through spec approval if it changes expected behavior. The plugin saves compact notes from Harness invocations. Approvals and check results come from their original artifacts.
 
-If your project already uses [Graphify](https://github.com/Graphify-Labs/graphify) or another repository map, Harness can use it to find candidate files and verify them against current source. You can use the context index with ordinary local search on any supported host.
+### Project knowledge graph (Graphify)
 
-### Optional Graphify setup
+Each spec, bug, workflow, execute, and QA stage keeps a [Graphify](https://github.com/Graphify-Labs/graphify) knowledge graph of the target project and adds to it as work moves forward. The graph covers both the source code and the Markdown notes under `.harness/`. Spec requirements, workflow steps, decisions, and lessons link to the code symbols they mention and to each other, so a later stage or a fresh chat can follow the trail without searching again. The graph builds locally from the code's syntax tree and the notes' headings and links, with no LLM or API key.
 
-Install the official CLI once with `uv tool install graphifyy`. Open a shell at the root of each repository you want to index, then run:
+Every stage uses the bundled `scripts/harness-graph.sh` helper:
+
+| Command | What it does |
+| --- | --- |
+| `check` | Reports whether the Graphify CLI, the graph, and the Harness notes are present. |
+| `install` | Installs the `graphifyy` CLI with uv, pipx, or pip when it is missing or outdated. |
+| `update` | Builds or incrementally refreshes `graphify-out/graph.json` from code and `.harness/**/*.md`. |
+| `query "<question>"` | Finds related code, requirements, and earlier decisions. |
+| `section "<heading>"` | Prints a linked note section, such as a requirement. |
+| `remember <outcome> "<q>" "<a>" [nodes]` | Records whether a lookup was useful, a dead end, or corrected, in `.harness/graph-memory/`. |
+| `lessons` | Aggregates those outcomes into `.harness/LESSONS.md`. |
+
+A stage checks for the CLI first and installs it if needed. It then refreshes the graph and queries it before doing a broad search. Before handing back, it writes notes that reference symbols such as `SubmitService.retry` and link earlier artifacts, then refreshes the graph so the next stage starts from it. Graph results are only navigation hints, so each stage confirms them against current source and the approved artifacts.
+
+After installing Harness in a project, invoke any stage, such as `harness-spec`, and it sets up the graph on first use. To build the graph up front, run this from the project root:
 
 ```sh
-graphify extract . --code-only --backend none
-graphify query "Where is UserService called?" --graph graphify-out/graph.json --budget 1000 --depth 2
+uv tool install graphifyy   # skip if `graphify --help` already works
+graphify update .           # writes graphify-out/graph.json, no API key needed
 ```
 
-Replace `UserService` with a symbol in that repository. The extract command builds a local code index without an LLM backend. Rerun it to refresh the index as code changes. For Harness-only use, add `Harness may query the local Graphify index for cross-file discovery` to the target repository's agent instructions, or ask for Graphify when invoking a stage. The CLI and repo index are sufficient for Harness. See the [official Graphify setup and CLI reference](https://github.com/Graphify-Labs/graphify#install).
+Keep `.harness/` out of `.gitignore`, because Graphify skips ignored files. Commit `.harness/`, because it holds the durable memory. `graphify-out/` can be rebuilt with `update`, so committing it or adding it to `.gitignore` is up to you. To turn the graph off, tell a stage “Remember for this project: do not use Graphify.” To install the CLI manually, run `uv tool install graphifyy`. See the [Graphify CLI reference](https://github.com/Graphify-Labs/graphify#install).
 
 ## Install and update
 

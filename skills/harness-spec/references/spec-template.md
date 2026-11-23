@@ -8,4 +8,4 @@
 - Relevant constraints, assumptions, and dependencies
 - Rated questions, blocking status, and recommended answers
 
-Keep the document proportional to the task. Record approval separately in approvals.md.
+Name code symbols in backticks with project-relative paths and link earlier artifacts by relative Markdown links so the project knowledge graph connects them. Keep the document proportional to the task. Record approval separately in approvals.md.
