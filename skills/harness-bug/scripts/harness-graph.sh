@@ -48,6 +48,20 @@ missing_commands() {
   printf '%s' "$missing"
 }
 
+find_mcp() {
+  if command -v graphify-mcp >/dev/null 2>&1; then
+    command -v graphify-mcp
+    return 0
+  fi
+  for candidate in "$HOME/.local/bin/graphify-mcp" "$HOME/.cargo/bin/graphify-mcp"; do
+    if [ -x "$candidate" ]; then
+      say "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
 cmd_check() {
   say "project: $ROOT"
   if ! cli=$(find_cli); then
@@ -60,6 +74,11 @@ cmd_check() {
   if [ -n "$missing" ]; then
     say "graphify: outdated, lacks:$missing (run: uv tool upgrade graphifyy)"
     return 1
+  fi
+  if mcp=$(find_mcp); then
+    say "graphify mcp: $mcp"
+  else
+    say "graphify mcp: not on PATH (run: harness-graph.sh install for GUI hosts)"
   fi
   if git -C "$ROOT" check-ignore -q .harness/memory.md 2>/dev/null; then
     say "warning: .harness/ is gitignored, so Graphify will not index Harness notes"
@@ -76,18 +95,21 @@ cmd_check() {
 
 cmd_install() {
   if cli=$(find_cli) && [ -z "$(missing_commands "$cli")" ]; then
-    say "graphify already installed: $cli"
-    return 0
+    if find_mcp >/dev/null 2>&1; then
+      say "graphify already installed: $cli"
+      return 0
+    fi
+    say "graphify is installed; adding the MCP server extra"
   fi
   if command -v uv >/dev/null 2>&1; then
-    say "installing graphifyy with uv"
-    uv tool install --upgrade graphifyy || return 1
+    say "installing graphifyy[mcp] with uv"
+    uv tool install --upgrade "graphifyy[mcp]" || return 1
   elif command -v pipx >/dev/null 2>&1; then
-    say "installing graphifyy with pipx"
-    pipx install graphifyy || pipx upgrade graphifyy || return 1
+    say "installing graphifyy[mcp] with pipx"
+    pipx install "graphifyy[mcp]" || pipx upgrade graphifyy || return 1
   elif command -v python3 >/dev/null 2>&1; then
-    say "installing graphifyy with pip --user"
-    python3 -m pip install --user --upgrade graphifyy || return 1
+    say "installing graphifyy[mcp] with pip --user"
+    python3 -m pip install --user --upgrade "graphifyy[mcp]" || return 1
   else
     say "cannot install: need uv, pipx, or python3. See https://github.com/Graphify-Labs/graphify#install"
     return 1

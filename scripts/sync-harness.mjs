@@ -4,6 +4,7 @@ const skills = new URL('../skills/', import.meta.url);
 const read = (name) => readFileSync(new URL(`../${name}`, import.meta.url), 'utf8').replaceAll('\r\n', '\n');
 const constitution = read('HARNESS.md');
 const graphHelper = read('harness-graph.sh');
+const graphHelperMjs = read('harness-graph.mjs');
 
 for (const entry of readdirSync(skills, { withFileTypes: true })) {
   if (!entry.isDirectory() || !entry.name.startsWith('harness-')) continue;
@@ -16,4 +17,8 @@ for (const entry of readdirSync(skills, { withFileTypes: true })) {
   const helper = new URL('harness-graph.sh', scripts);
   writeFileSync(helper, graphHelper);
   chmodSync(helper, 0o755);
+
+  const helperMjs = new URL('harness-graph.mjs', scripts);
+  writeFileSync(helperMjs, graphHelperMjs);
+  chmodSync(helperMjs, 0o755);
 }

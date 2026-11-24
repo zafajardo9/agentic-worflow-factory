@@ -1,5 +1,11 @@
 {
   "name": "harness-factory",
-  "version": "0.2.0",
-  "description": "Human-approved software specs, implementation workflows, focused reviews, and user-facing QA."
+  "version": "0.3.0",
+  "description": "Human-approved software specs, implementation workflows, focused reviews, and user-facing QA.",
+  "mcpServers": {
+    "harness-graph": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/graphify-mcp.mjs"]
+    }
+  }
 }
