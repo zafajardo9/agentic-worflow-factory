@@ -1,5 +1,6 @@
 # Bug spec
 
+- Linked GitHub issue number and URL, when one was filed or supplied
 - Report, user impact, affected revision and environment
 - Expected behavior and its source
 - Observed behavior, conditions, evidence, and reproduction status

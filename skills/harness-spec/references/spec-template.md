@@ -1,6 +1,7 @@
 # Feature spec
 
 - Work item and current context
+- Source GitHub issue, its intake evidence, and links to prior artifacts
 - Users, goal, and evidence of current behavior
 - Included scope and exclusions
 - User journeys, alternate paths, and recovery

@@ -1,6 +1,6 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "harness-factory",
-  "version": "0.2.0",
-  "description": "Human-approved software specs, implementation workflows, focused reviews, and user-facing QA."
+  "version": "0.3.0",
+  "description": "Human-approved software specs, implementation workflows, focused reviews, user-facing QA, and GitHub issues for failures."
 }

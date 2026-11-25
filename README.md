@@ -7,16 +7,35 @@ Harness Factory is a skills-only plugin for taking a software change from intake
 | Skill | Output |
 | --- | --- |
 | `web-research` | Dated findings, tradeoffs, and recommendations backed by live web sources. |
-| `harness-spec` | A feature spec with evidence, acceptance criteria, and questions rated by impact. |
-| `harness-bug` | A bug spec with expected and observed behavior, root-cause confidence, and regression criteria. |
+| `harness-spec` | A feature spec with evidence, acceptance criteria, and questions rated by impact, optionally starting from an existing GitHub issue. |
+| `harness-bug` | A bug spec with expected and observed behavior, root-cause confidence, regression criteria, and a GitHub issue for the work. |
 | `harness-workflow` | An implementation and verification plan mapped to the approved requirements. |
 | `harness-review` | Findings for the section, document, diff, layer, or QA evidence you ask it to review. |
 | `harness-execute` | The approved code changes and implementation check results. |
-| `harness-qa` | User-facing test results and any failures or verification gaps. |
+| `harness-qa` | User-facing test results, any failures or verification gaps, and a GitHub issue per failure. |
 
 Start with spec or bug intake. Approve that revision, call workflow, approve the workflow revision, then call execute and QA separately. Review is optional and can be called at any point. Run `web-research` on demand when an idea or spec needs current evidence. It uses your host's live web search or browsing tool and returns findings in chat. A QA failure against agreed behavior can start a new bug intake. If expected behavior is unclear, revisit the spec.
 
 For example, invoke `harness-spec` with “Let customers retry a failed submission without losing their input.” Then invoke `harness-review` with “Review the acceptance criteria for retry and duplicate submissions.” Explicitly approve the spec fingerprint presented when ready. Default work-item files live under `.harness/<task-slug>/` in the project you are working on. The two human approval gates apply to the exact spec and workflow revisions.
+
+## GitHub issues
+
+With the GitHub CLI installed and authenticated, `harness-bug` and `harness-qa` file issues in the target project's repository so the work is visible to everyone. Each issue carries a `harness:bug` or `harness:qa` label, the evidence and work-item links, and a stable `Harness-Dedupe` marker, so a repeat run updates the existing issue instead of opening another. Point `harness-spec` at an issue number or URL to start the cycle from it, for example `/harness-spec #42`; the spec stage labels the issue `harness:spec` and comments the draft. Later stages add a one-line status comment to a linked issue.
+
+The bundled `scripts/harness-issue.sh` helper runs from inside the target project:
+
+| Command | What it does |
+| --- | --- |
+| `check` | Reports gh, authentication, the GitHub repository, and whether issues are enabled. |
+| `repo` | Prints the target repository as `owner/name`. |
+| `ensure-labels` | Creates or refreshes the `harness:bug`, `harness:qa`, and `harness:spec` labels. |
+| `find "<marker>"` | Finds the issue whose body carries the marker. |
+| `create ...` | Creates an issue, or updates the matching one when `--marker` is given. |
+| `update <n> ...` | Edits an issue's title, body, or labels. |
+| `comment <n> ...` | Adds a comment. |
+| `view <n\|url>` | Prints an issue for spec intake. |
+
+If `gh` is missing, unauthenticated, or the project has no GitHub remote, the helper writes the same title, body, and labels to `--payload-file` when given, or prints them, instead of filing anything and exits with code 3. The stage tells you the issue was not filed and gives the manual command. Keep credentials, tokens, and private payloads out of issue bodies. Issues are records, not approvals; the approval gates below still apply to the exact spec and workflow revisions.
 
 ## Reuse context across stages
 
@@ -105,6 +124,6 @@ For workspace-only discovery, use the Skills CLI or copy the seven skill directo
 
 ## Maintain the plugin
 
-Edit `skills/<name>/SKILL.md` or its references. For shared rules, edit the root `HARNESS.md`, run `node scripts/sync-harness.mjs`, and commit the generated copies. Each skill carries its own copy so it works when installed individually. For a release, bump the version in the root manifest and all three host manifests together, then commit and push. The marketplace files point to the same checkout.
+Edit `skills/<name>/SKILL.md` or its references. For shared rules, edit the root `HARNESS.md`, run `node scripts/sync-harness.mjs`, and commit the generated copies. The same sync copies the root `harness-graph.sh` and `harness-issue.sh` into each skill's `scripts/` directory, so edit only the root copies. Each skill carries its own copy so it works when installed individually. For a release, bump the version in the root manifest and all three host manifests together, then commit and push. The marketplace files point to the same checkout.
 
 For local packaging checks, run `claude plugin validate .`, `codex plugin marketplace list` from the checkout, and `agy plugin validate .` where those tools are installed. After installation, try a spec in a disposable project. Confirm that it stops at approval, review produces findings without editing the spec, and execute cannot start when an approved artifact has been edited since approval.
