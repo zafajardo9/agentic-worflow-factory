@@ -1,6 +1,6 @@
 # Harness Factory
 
-Harness Factory is a skills-first plugin for taking a software change from intake through human approval, implementation, and user-facing QA. All hosts use the same [constitution](HARNESS.md), skill instructions, and templates, and plugin installs also carry a local Graphify MCP server for GUI agents.
+Harness Factory is a skills-first plugin for taking a software change from intake through human approval, implementation, and user-facing QA, with a durable project brain that remembers what the work teaches. All hosts use the same [constitution](HARNESS.md), skill instructions, and templates, and plugin installs also carry a local Graphify MCP server for GUI agents.
 
 ## Run a stage
 
@@ -13,8 +13,10 @@ Harness Factory is a skills-first plugin for taking a software change from intak
 | `harness-review` | Findings for the section, document, diff, layer, or QA evidence you ask it to review. |
 | `harness-execute` | The approved code changes and implementation check results. |
 | `harness-qa` | User-facing test results, any failures or verification gaps, and a GitHub issue per failure. |
+| `harness-reflect` | Durable brain entries extracted from the current conversation, with evidence and confidence. |
+| `harness-meditate` | Brain contradictions and drift, archived stale entries, surfaced principles, and proposed skill improvements. |
 
-Start with spec or bug intake. Approve that revision, call workflow, approve the workflow revision, then call execute and QA separately. Review is optional and can be called at any point. Run `web-research` on demand when an idea or spec needs current evidence. It uses your host's live web search or browsing tool and returns findings in chat. A QA failure against agreed behavior can start a new bug intake. If expected behavior is unclear, revisit the spec.
+Start with spec or bug intake. Approve that revision, call workflow, approve the workflow revision, then call execute and QA separately. Review is optional and can be called at any point. Run `web-research` on demand when an idea or spec needs current evidence. It uses your host's live web search or browsing tool and returns findings in chat. A QA failure against agreed behavior can start a new bug intake. If expected behavior is unclear, revisit the spec. Run `harness-reflect` after a working session to keep what it taught, and `harness-meditate` once entries accumulate to reconcile them with the skills and current source.
 
 For example, invoke `harness-spec` with “Let customers retry a failed submission without losing their input.” Then invoke `harness-review` with “Review the acceptance criteria for retry and duplicate submissions.” Explicitly approve the spec fingerprint presented when ready. Default work-item files live under `.harness/<task-slug>/` in the project you are working on. The two human approval gates apply to the exact spec and workflow revisions.
 
@@ -37,6 +39,31 @@ The bundled `scripts/harness-issue.sh` helper runs from inside the target projec
 
 If `gh` is missing, unauthenticated, or the project has no GitHub remote, the helper writes the same title, body, and labels to `--payload-file` when given, or prints them, instead of filing anything and exits with code 3. The stage tells you the issue was not filed and gives the manual command. Keep credentials, tokens, and private payloads out of issue bodies. Issues are records, not approvals; the approval gates below still apply to the exact spec and workflow revisions.
 
+## Brain: reflect and meditate
+
+Durable project memory lives in `.harness/brain/`, one Markdown entry per file, separate from task memory and `.harness/memory.md`. An entry has a type (`decision`, `preference`, `constraint`, `convention`, `pitfall`, `fact`, `principle`, `question`), a status (`active`, `proposed`, `stale`, `superseded`, `rejected`), a scope, a confidence, and its evidence. With the default location, Graphify indexes the brain because it is Markdown under `.harness/`, so the graph links entries to code symbols and to each other. Set `HARNESS_BRAIN` to keep the brain somewhere other than `.harness/brain/`.
+
+- **`harness-reflect`** scans the current conversation and the artifacts it produced, then writes or updates entries for what is durable and evidenced: decisions, corrections, preferences, constraints, conventions, pitfalls, verified facts, open questions, and principles. Most brain content comes from this stage.
+- **`harness-meditate`** reviews the brain against the skills and current source. It verifies entries and reports drift, resolves contradictions by superseding the weaker entry, surfaces principles supported by at least two entries, archives superseded and reviewed stale entries, and proposes skill improvements. It does not edit a skill without explicit approval.
+
+The bundled `scripts/harness-brain.sh` helper runs from inside the target project:
+
+| Command | What it does |
+| --- | --- |
+| `check` | Reports the brain, entry validity, archived count, and entries older than 90 days. |
+| `init` | Creates `.harness/brain/` and its index. |
+| `path` | Prints the brain path. |
+| `add ...` | Adds one entry; refuses an id that already exists unless `--force` is given. |
+| `update <id> ...` | Changes status, confidence, scope, tags, derived entries, or appends a dated note. |
+| `supersede <old> <new>` | Marks the old entry superseded and links both sides. |
+| `list` / `search "<query>"` / `get <id>` | Read entries by filter, text, or id. |
+| `stale [--days N] [--mark]` | Finds older active entries and optionally marks them stale. |
+| `prune [--include-stale] [--dry-run]` | Archives superseded, rejected, and reviewed stale entries. |
+| `forget <id>` | Archives an entry at the user's request. |
+| `index` / `stats` | Regenerates `.harness/brain/README.md` or counts entries by status. |
+
+Prune archives to `archive/`; nothing is deleted. Brain entries are memory, not approval: they never override current instructions, an approved artifact, or current source, and a user's forget request wins. Keep secrets, personal data, and raw transcripts out.
+
 ## Reuse context across stages
 
 Harness carries forward useful information from prompts when you invoke its stages. Task memory in `.harness/<task-slug>/context.md` records decisions, blockers, the next action, pointers to existing evidence, and a trail of links to each stage's artifacts. Project memory in `.harness/memory.md` carries durable preferences and confirmed conventions across tasks. Both files live in the target project and are readable in a fresh chat opened there.
@@ -45,7 +72,7 @@ For example, tell a stage “Remember for this project that browser QA uses the 
 
 ### Project knowledge graph (Graphify)
 
-Each spec, bug, workflow, execute, and QA stage keeps a [Graphify](https://github.com/Graphify-Labs/graphify) knowledge graph of the target project and adds to it as work moves forward. The graph covers both the source code and the Markdown notes under `.harness/`. Spec requirements, workflow steps, decisions, and lessons link to the code symbols they mention and to each other, so a later stage or a fresh chat can follow the trail without searching again. The graph builds locally from the code's syntax tree and the notes' headings and links, with no LLM or API key.
+Each stage, including reflect and meditate, keeps a [Graphify](https://github.com/Graphify-Labs/graphify) knowledge graph of the target project and adds to it as work moves forward. The graph covers both the source code and the Markdown notes under `.harness/`. Spec requirements, workflow steps, decisions, and lessons link to the code symbols they mention and to each other, so a later stage or a fresh chat can follow the trail without searching again. The graph builds locally from the code's syntax tree and the notes' headings and links, with no LLM or API key.
 
 Every stage uses the bundled `scripts/harness-graph.sh` helper on macOS and Linux, or `scripts/harness-graph.mjs` on Windows and any host without a POSIX shell. Both accept the same commands:
 
@@ -95,13 +122,13 @@ Keep `.harness/` out of `.gitignore`, because Graphify skips ignored files. Comm
 
 ### Quick install with the Skills CLI
 
-With Node.js installed, run this from the project where you want the seven skills:
+With Node.js installed, run this from the project where you want the nine skills:
 
 ```sh
 npx skills add zafajardo9/agentic-worflow-factory
 ```
 
-Select all seven skills and your agent. Add `--global` for a user-wide install, or `--skill harness-review` to install a single stage. These are standalone skills, so use your agent's skill picker or its standalone invocation syntax. See the [Skills CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md).
+Select all nine skills and your agent. Add `--global` for a user-wide install, or `--skill harness-review` to install a single stage. These are standalone skills, so use your agent's skill picker or its standalone invocation syntax. See the [Skills CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md).
 
 The GitHub commands work once the files are on the repository's default branch. For a local checkout, use its absolute path as the source.
 
@@ -141,10 +168,10 @@ agy plugin install https://github.com/zafajardo9/agentic-worflow-factory
 
 This installs to your profile. Invoke `/harness-spec` and substitute the skill name for other stages. To refresh a manually installed copy, reinstall from the updated source. If the client reports that the plugin already exists, uninstall it with `agy plugin uninstall harness-factory` and install again.
 
-For workspace-only discovery, use the Skills CLI or copy the seven skill directories from `skills/` into the target project's `.agents/skills/`. Refresh these copies after pulling an update. See [Antigravity plugins](https://antigravity.google/docs/plugins) and [workspace skills](https://antigravity.google/docs/skills).
+For workspace-only discovery, use the Skills CLI or copy the nine skill directories from `skills/` into the target project's `.agents/skills/`. Refresh these copies after pulling an update. See [Antigravity plugins](https://antigravity.google/docs/plugins) and [workspace skills](https://antigravity.google/docs/skills).
 
 ## Maintain the plugin
 
-Edit `skills/<name>/SKILL.md` or its references. For shared rules, edit the root `HARNESS.md`, run `node scripts/sync-harness.mjs`, and commit the generated copies. Edit the root `harness-graph.sh`, `harness-graph.mjs`, and `harness-issue.sh`; the sync script copies all three into each skill's `scripts/` directory so each skill still works when installed individually. The GUI graph server lives in `scripts/graphify-mcp.mjs` and is referenced by `.claude-plugin/plugin.json` and the portable `mcp.json`. For a release, bump the version in the root manifest and all three host manifests together, then commit and push. The marketplace files point to the same checkout.
+Edit `skills/<name>/SKILL.md` or its references. For shared rules, edit the root `HARNESS.md`, run `node scripts/sync-harness.mjs`, and commit the generated copies. Edit the root `harness-graph.sh`, `harness-graph.mjs`, `harness-issue.sh`, and `harness-brain.sh`; the sync script copies all four into each skill's `scripts/` directory so each skill still works when installed individually. The GUI graph server lives in `scripts/graphify-mcp.mjs` and is referenced by `.claude-plugin/plugin.json` and the portable `mcp.json`. For a release, bump the version in the root manifest and all three host manifests together, then commit and push. The marketplace files point to the same checkout.
 
 For local packaging checks, run `claude plugin validate .`, `codex plugin marketplace list` from the checkout, and `agy plugin validate .` where those tools are installed. After installation, try a spec in a disposable project. Confirm that it stops at approval, review produces findings without editing the spec, and execute cannot start when an approved artifact has been edited since approval.

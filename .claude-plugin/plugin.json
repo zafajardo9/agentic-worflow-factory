@@ -1,7 +1,7 @@
 {
   "name": "harness-factory",
-  "version": "0.3.0",
-  "description": "Human-approved software specs, implementation workflows, focused reviews, user-facing QA, and GitHub issues for failures.",
+  "version": "0.4.0",
+  "description": "Human-approved software specs, implementation workflows, focused reviews, user-facing QA, GitHub issues for failures, and a durable project brain.",
   "mcpServers": {
     "harness-graph": {
       "command": "node",
