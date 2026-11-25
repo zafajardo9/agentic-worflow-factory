@@ -3,7 +3,7 @@ import { chmodSync, readFileSync, readdirSync, mkdirSync, writeFileSync } from '
 const skills = new URL('../skills/', import.meta.url);
 const read = (name) => readFileSync(new URL(`../${name}`, import.meta.url), 'utf8').replaceAll('\r\n', '\n');
 const constitution = read('HARNESS.md');
-const helpers = ['harness-graph.sh', 'harness-issue.sh'];
+const helpers = ['harness-graph.sh', 'harness-graph.mjs', 'harness-issue.sh'];
 
 for (const entry of readdirSync(skills, { withFileTypes: true })) {
   if (!entry.isDirectory() || !entry.name.startsWith('harness-')) continue;
